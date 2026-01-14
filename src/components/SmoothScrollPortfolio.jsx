@@ -1,11 +1,12 @@
-import { useEffect } from 'react'
-import Lenis from '@studio-freight/lenis'
-import { motion, useScroll, useSpring } from 'framer-motion'
-import Hero from '../pages/Hero'
-import Skills from '../pages/Skills'
-import Education from '../pages/Education'
-import Projects from '../pages/Projects'
-import Contact from '../pages/Contact'
+import { useEffect } from 'react';
+import Lenis from '@studio-freight/lenis';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import Hero from '../pages/Hero';
+import Skills from '../pages/Skills';
+import Education from '../pages/Education';
+import Projects from '../pages/Projects';
+import Contact from '../pages/Contact';
+import Experience from '../pages/Experience';
 
 export const PortfolioScrollReveal = () => {
   useEffect(() => {
@@ -16,23 +17,23 @@ export const PortfolioScrollReveal = () => {
       smoothTouch: false,
       direction: 'vertical',
       gestureDirection: 'vertical',
-    })
+    });
 
     const raf = time => {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
 
-    requestAnimationFrame(raf)
-    return () => lenis.destroy()
-  }, [])
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
+  }, []);
 
-  const { scrollYProgress } = useScroll()
+  const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
-  })
+  });
 
   return (
     <div className="relative bg-zinc-950 text-white overflow-hidden">
@@ -46,9 +47,10 @@ export const PortfolioScrollReveal = () => {
 
       <Hero />
       <Skills />
+      <Experience />
       <Education />
       <Projects />
       <Contact />
     </div>
-  )
-}
+  );
+};

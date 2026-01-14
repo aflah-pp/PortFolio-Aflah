@@ -1,21 +1,7 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
-import {
-  FaHtml5,
-  FaCss3Alt,
-  FaJs,
-  FaPython,
-  FaReact,
-  FaBootstrap,
-  FaGitAlt,
-} from 'react-icons/fa'
-import {
-  LuBrain,
-  LuLightbulb,
-  LuRepeat,
-  LuFeather,
-  LuUsers,
-} from 'react-icons/lu'
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { useRef } from 'react';
+import { FaHtml5, FaCss3Alt, FaJs, FaPython, FaReact, FaBootstrap, FaGitAlt } from 'react-icons/fa';
+import { LuBrain, LuRepeat, LuUsers } from 'react-icons/lu';
 import {
   SiTailwindcss,
   SiDjango,
@@ -27,8 +13,8 @@ import {
   SiFigma,
   SiJquery,
   SiFramer,
-} from 'react-icons/si'
-import { BiLogoVisualStudio } from 'react-icons/bi'
+} from 'react-icons/si';
+import { BiLogoVisualStudio } from 'react-icons/bi';
 
 const skillCategories = [
   {
@@ -45,160 +31,146 @@ const skillCategories = [
     items: [
       { name: 'ReactJS', icon: <FaReact className="text-cyan-400" /> },
       { name: 'Django', icon: <SiDjango className="text-green-500" /> },
-      { name: 'React Native', icon: <SiReact className="text-cyan-400" /> },
-      { name: 'Bootstrap', icon: <FaBootstrap className="text-purple-500" /> },
       { name: 'TailwindCSS', icon: <SiTailwindcss className="text-sky-400" /> },
-      { name: 'jQuery', icon: <SiJquery className="text-blue-400" /> },
+      { name: 'BootStrap', icon: <FaBootstrap className="text-sky-400" /> },
+      { name: 'JQuery', icon: <SiJquery className="text-sky-400" /> },
+      { name: 'React Native', icon: <SiReact className="text-cyan-400" /> },
     ],
   },
   {
-    title: 'Tools',
+    title:"Database",
+    items:[
+      { name: 'SQL', icon: <SiMysql className="text-blue-200 " /> },
+       { name: 'PostgreSQL', icon: <SiPostgresql className="text-blue-300" /> },
+       { name: 'SQL-Lite', icon: <SiSqlite className="text-blue-500" /> },
+    ]
+  },
+  {
+    title: 'Tools & DB',
     items: [
       { name: 'Git', icon: <FaGitAlt className="text-orange-400" /> },
-      {
-        name: 'VS Code',
-        icon: <BiLogoVisualStudio className="text-blue-500" />,
-      },
       { name: 'Postman', icon: <SiPostman className="text-orange-500" /> },
+      { name: 'VsCode', icon: <BiLogoVisualStudio className="text-blue-500" /> },
       { name: 'Figma', icon: <SiFigma className="text-pink-500" /> },
-      { name: 'Framer', icon: <SiFramer className="text-grey-500" /> },
+      { name: 'Framer', icon: <SiFramer className="text-teal-800 " /> },
     ],
   },
   {
-    title: 'Databases',
-    items: [
-      { name: 'MySQL', icon: <SiMysql className="text-sky-400" /> },
-      { name: 'PostgreSQL', icon: <SiPostgresql className="text-blue-500" /> },
-      { name: 'SQLite', icon: <SiSqlite className="text-gray-400" /> },
-    ],
-  },
-  {
-    title: 'Other',
+    title: 'Soft Skills',
     items: [
       { name: 'Problem Solving', icon: <LuBrain className="text-pink-400" /> },
-      {
-        name: 'Critical Thinking',
-        icon: <LuLightbulb className="text-yellow-400" />,
-      },
       { name: 'Adaptability', icon: <LuRepeat className="text-green-400" /> },
-      { name: 'Flexibility', icon: <LuFeather className="text-sky-400" /> },
       { name: 'Teamwork', icon: <LuUsers className="text-purple-400" /> },
     ],
   },
-]
+];
 
 const Skills = () => {
-  const ref = useRef(null)
+  const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: containerRef,
     offset: ['start center', 'end end'],
-  })
+  });
 
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.4, 1])
+  const scaleY = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
   return (
     <section
-      ref={ref}
-      className="relative min-h-[200vh] bg-gradient-to-b from-black via-zinc-950 to-black flex flex-col items-center py-32 overflow-hidden"
+      ref={containerRef}
+      className="relative bg-[#050505] text-white py-32 overflow-hidden px-6"
     >
-      {/* Background glow */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-600/20 blur-[180px]" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-700/20 blur-[180px]" />
 
-      {/* Title */}
-      <motion.h2
-        style={{ opacity }}
-        initial={{ y: 40 }}
-        whileInView={{ y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-white mb-32 text-center tracking-wide"
-      >
-        My Skills
-      </motion.h2>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.03),transparent_70%)]" />
 
-      {/* Skills Cards */}
-      <div className="w-full max-w-5xl space-y-48 relative z-10">
-        {skillCategories.map((category, i) => {
-          const cardRef = useRef(null)
-          const { scrollYProgress: cardScroll } = useScroll({
-            target: cardRef,
-            offset: ['start 0.9', 'start 0.3'],
-          })
+      <header className="text-center mb-48 relative z-10">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-5xl md:text-7xl font-black tracking-tighter"
+        >
+          Technical <span className="text-cyan-400">Stack</span>
+        </motion.h2>
+        <div className="w-24 h-1 bg-cyan-500 mx-auto mt-6 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+      </header>
 
-          const y = useTransform(cardScroll, [0, 1], [100, 0])
-          const scale = useTransform(cardScroll, [0, 1], [0.9, 1])
-          const opacity = useTransform(cardScroll, [0, 1], [0, 1])
-          const rotateY = useTransform(cardScroll, [0, 1], [15, 0])
+      <div className="max-w-6xl mx-auto relative flex flex-col items-center">
 
-          return (
-            <motion.div
-              ref={cardRef}
-              key={i}
-              style={{ y, scale, opacity, rotateY }}
-              transition={{ type: 'spring', stiffness: 80, damping: 15 }}
-              className={`relative bg-gradient-to-br from-zinc-900/90 to-zinc-800/50 border border-white/10 backdrop-blur-xl rounded-3xl p-10 md:p-12 text-white shadow-[0_0_25px_rgba(0,255,255,0.1)] hover:shadow-[0_0_35px_rgba(0,255,255,0.3)] ${
-                i % 2 === 0 ? 'md:mr-24 md:self-end' : 'md:ml-24 md:self-start'
-              }`}
-            >
-              {/* Timeline Dot */}
-              <motion.div
-                animate={{ scale: [1, 1.4, 1], opacity: [0.9, 1, 0.9] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className={`absolute w-6 h-6 rounded-full bg-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.8)] top-10 hidden md:block ${
-                  i % 2 === 0 ? '-left-[2.7rem]' : '-right-[2.7rem]'
-                }`}
-              />
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] h-full bg-zinc-900 hidden md:block">
+          <motion.div
+            style={{ scaleY }}
+            className="w-full h-full bg-cyan-400 origin-top shadow-[0_0_15px_rgba(34,211,238,0.5)]"
+          />
+        </div>
 
-              {/* Category Title */}
-              <h3 className="text-3xl font-semibold text-cyan-300 text-center mb-10">
-                {category.title}
-              </h3>
-
-              {/* Skills Grid */}
-              <motion.ul
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-              >
-                {category.items.map((item, j) => (
-                  <motion.li
-                    key={j}
-                    whileHover={{
-                      scale: 1.1,
-                      y: -6,
-                      boxShadow: '0 0 20px rgba(0,255,255,0.25)',
-                    }}
-                    transition={{ type: 'spring', stiffness: 250, damping: 12 }}
-                    className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-zinc-800/70 hover:bg-zinc-700/80 backdrop-blur-md transition-all duration-300 border border-zinc-700/50"
-                  >
-                    {item.icon && (
-                      <motion.span
-                        animate={{
-                          rotate: [0, 10, -10, 0],
-                        }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 6 + Math.random() * 2,
-                          ease: 'easeInOut',
-                        }}
-                        className="text-2xl flex-shrink-0"
-                      >
-                        {item.icon}
-                      </motion.span>
-                    )}
-                    <span className="text-lg font-medium text-gray-300">
-                      {item.name}
-                    </span>
-                  </motion.li>
-                ))}
-              </motion.ul>
-            </motion.div>
-          )
-        })}
+        <div className="w-full space-y-32 relative z-10">
+          {skillCategories.map((category, i) => (
+            <SkillFlowCard key={i} category={category} index={i} />
+          ))}
+        </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Skills
+const SkillFlowCard = ({ category, index }) => {
+  const isEven = index % 2 === 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: isEven ? 50 : -50 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ type: 'spring', stiffness: 50, damping: 20 }}
+      className={`relative flex flex-col w-full items-center ${
+        isEven ? 'md:flex-row-reverse' : 'md:flex-row'
+      }`}
+    >
+
+      <motion.div
+        animate={{ scale: [1, 1.3, 1], opacity: [0.9, 1, 0.9] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute left-1/2 -translate-x-1/2 top-10 w-6 h-6 rounded-full bg-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.8)] hidden md:block z-20"
+      />
+
+      <div className={`w-full md:w-[45%] ${isEven ? 'md:pl-12' : 'md:pr-12'}`}>
+        <div className="group bg-zinc-900/40 backdrop-blur-xl border border-white/5 p-8 rounded-[2rem] hover:border-cyan-500/30 transition-all duration-500 shadow-2xl">
+          <h3
+            className={`text-2xl font-bold text-white mb-8 flex items-center gap-3 ${
+              !isEven && 'md:justify-end'
+            }`}
+          >
+            <span className="text-cyan-400 font-mono text-lg italic">0{index + 1}.</span>
+            {category.title}
+          </h3>
+
+          <div className={`flex flex-wrap gap-3 ${!isEven && 'md:justify-end'}`}>
+            {category.items.map((item, j) => (
+              <motion.div
+                key={j}
+                whileHover={{
+                  scale: 1.05,
+                  borderColor: 'rgba(34, 211, 238, 0.4)',
+                  backgroundColor: 'rgba(34, 211, 238, 0.05)',
+                }}
+                className="flex items-center gap-3 px-4 py-2.5 bg-zinc-800/50 border border-white/5 rounded-xl transition-all group/pill"
+              >
+                <span className="text-2xl group-hover/pill:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] transition-all">
+                  {item.icon}
+                </span>
+                <span className="text-sm font-semibold text-zinc-300 group-hover/pill:text-white transition-colors">
+                  {item.name}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+
+      <div className="hidden md:block w-[45%]" />
+    </motion.div>
+  );
+};
+
+export default Skills;
