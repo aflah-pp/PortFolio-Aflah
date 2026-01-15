@@ -1,50 +1,52 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Cartify from '../assets/Cartify.png';
 import NarrativeN from '../assets/NarrativeN.png';
 import Ndrive from '../assets/N-Drive.png';
 
 const Projects = () => {
   const containerRef = useRef(null);
+  const pathRef = useRef(null);
+  const [pathLength, setPathLength] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end end'],
+    offset: ['start 80%', 'end end'],
   });
+
+  const scrollSpring = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  useEffect(() => {
+    if (pathRef.current) {
+      setPathLength(pathRef.current.getTotalLength());
+    }
+  }, []);
 
   const projects = [
     {
       title: 'N-Drive',
       description:
-        'N-Drive is a full-stack cloud file management platform built with React (frontend) and Django REST Framework (backend).It allows users to securely upload, organize, share, and download files or folders — all with AI-assisted features like chat and image generation.',
+        'Full-stack cloud file management platform built with React and Django. Securely upload, organize, and share files with AI-assisted features.',
       img: Ndrive,
-      stack: ['React', 'TailwindCSS', 'Python', 'Django', 'AI-Integration', 'Cloudinary'],
+      stack: ['React', 'Django', 'TailwindCSS', 'AI-Integration'],
       git: 'https://github.com/aflah-pp/N-Drive',
       demo: 'https://n-drive-app.netlify.app',
     },
     {
-      title: 'Cartify - Full Stack Ecommerce',
+      title: 'Cartify',
       description:
-        'Cartify is a modern, full-stack e-commerce platform built with React, Django REST Framework, TailwindCSS, and SQLite. It supports both regular users and sellers with full product management, JWT-based authentication, cart and checkout systems, a polished UI, and an AI-powered Help Center for automated support.',
+        'Modern e-commerce platform with JWT authentication, full product management for sellers, and an AI-powered Help Center.',
       img: Cartify,
-      stack: [
-        'React',
-        'TailwindCSS',
-        'Python',
-        'Django',
-        'Framer-Motion',
-        'Supabase',
-        'Cloudinary',
-      ],
+      stack: ['React', 'Django', 'Supabase', 'Framer-Motion'],
       git: 'https://github.com/aflah-pp/Cartify',
       demo: 'https://app-cartify.netlify.app/',
     },
     {
       title: 'Narrative-Nexus',
       description:
-        'A full-stack authoring + reading platform powered by React & Django.Write + edit stories and chapters (rich editor) . Reader mode with customizable view,Like, Bookmark, Like chapters, Get notified on chapter publish & Follows, Real-time global messaging between users, Upload cover images, profile pics, Follow users, view profiles, explore users',
+        'A social authoring platform with rich text editing, global messaging, and real-time notifications for chapter updates.',
       img: NarrativeN,
-      stack: ['React', 'TailwindCSS', 'Python', 'Django', 'Supabase', 'Cloudinary'],
+      stack: ['React', 'Django', 'Supabase', 'Cloudinary'],
       git: '',
       demo: 'https://narrativrnexus.netlify.app/',
     },
@@ -53,20 +55,43 @@ const Projects = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen bg-[#030303] text-white py-20 overflow-x-hidden"
+      className="relative min-h-screen bg-[#030303] text-white py-32 overflow-hidden"
     >
 
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
+      <div className="absolute inset-0 pointer-events-none hidden md:block">
+        <svg
+          viewBox="0 0 1000 1000"
+          fill="none"
+          preserveAspectRatio="none"
+          className="w-full h-full"
+        >
+
+          <path
+            d="M 500 0 C 800 200, 950 300, 850 400 C 700 550, 100 450, 150 700 C 200 900, 300 950, 500 1000"
+            stroke="rgba(34, 211, 238, 0.08)"
+            strokeWidth="1"
+          />
+
+
+          <motion.path
+            ref={pathRef}
+            d="M 500 0 C 800 200, 950 300, 850 400 C 700 550, 100 450, 150 700 C 200 900, 300 950, 500 1000"
+            stroke="#22d3ee"
+            strokeWidth="1"
+            strokeLinecap="round"
+            style={{
+              pathLength: scrollSpring,
+              filter: 'drop-shadow(0px 0px 6px #22d3ee)',
+            }}
+          />
+        </svg>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <header className="mb-32 text-center">
+        <header className="mb-48 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
             className="inline-block px-4 py-1.5 mb-6 rounded-full border border-cyan-500/30 bg-cyan-500/5 text-cyan-400 text-sm font-medium tracking-widest uppercase"
           >
             Portfolio
@@ -74,16 +99,16 @@ const Projects = () => {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-6xl md:text-8xl font-black tracking-tighter"
+            className="text-7xl md:text-9xl font-black tracking-tighter"
           >
             Selected{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-600">
               Works
             </span>
           </motion.h2>
         </header>
 
-        <div className="flex flex-col gap-32 md:gap-64">
+        <div className="flex flex-col gap-64 md:gap-96">
           {projects.map((project, i) => (
             <ProjectCard key={i} project={project} index={i} />
           ))}
@@ -102,84 +127,75 @@ const ProjectCard = ({ project, index }) => {
     offset: ['start end', 'end start'],
   });
 
-  // Parallax effect for image and text
-  const yImage = useTransform(scrollYProgress, [0, 1], [-50, 50]);
+  const yImage = useTransform(scrollYProgress, [0, 1], [-60, 60]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
     <motion.div
       ref={cardRef}
       style={{ opacity }}
-      className={`flex flex-col ${
+      className={`relative flex flex-col ${
         isEven ? 'md:flex-row' : 'md:flex-row-reverse'
-      } items-center gap-12 md:gap-24`}
+      } items-center gap-16 md:gap-32`}
     >
+      <span
+        className={`absolute -top-24 ${
+          isEven ? '-left-10' : '-right-10'
+        } text-[18rem] font-black text-white/[0.02] select-none pointer-events-none hidden md:block italic`}
+      >
+        0{index + 1}
+      </span>
 
-      <div className="w-full md:w-3/5 group relative">
+      <div className="w-full md:w-3/5 group relative z-10">
         <motion.div
           style={{ y: yImage }}
-          className="relative aspect-video overflow-hidden rounded-2xl border border-white/10 bg-zinc-900"
+          className="relative aspect-video overflow-hidden rounded-[2.5rem] border border-white/10 bg-zinc-900 shadow-2xl"
         >
           <img
             src={project.img}
             alt={project.title}
-            className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
           />
-
-          <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity" />
         </motion.div>
-
-
-        <span className="absolute -bottom-10 -left-10 text-[12rem] font-bold text-white/5 select-none pointer-events-none hidden md:block">
-          0{index + 1}
-        </span>
       </div>
 
-
-      <div className="w-full md:w-2/5 flex flex-col items-start">
+      <div className="w-full md:w-2/5 flex flex-col items-start z-10">
         <motion.div
-          initial={{ opacity: 0, x: isEven ? 20 : -20 }}
+          initial={{ opacity: 0, x: isEven ? 40 : -40 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1 }}
           className="space-y-6"
         >
-          <h3 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
+          <h3 className="text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
             {project.title}
           </h3>
-
-          <p className="text-zinc-400 text-lg leading-relaxed">{project.description}</p>
-
+          <p className="text-zinc-400 text-xl leading-relaxed">{project.description}</p>
           <div className="flex flex-wrap gap-2">
             {project.stack.map((tech, idx) => (
               <span
                 key={idx}
-                className="text-[11px] font-mono px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 uppercase tracking-wider"
+                className="text-[10px] font-mono px-4 py-1.5 rounded-full bg-cyan-500/5 border border-cyan-500/20 text-cyan-400 uppercase tracking-widest"
               >
                 {tech}
               </span>
             ))}
           </div>
-
-          <div className="flex gap-4 pt-4">
-            {project.git && (
-              <a
-                href={project.git}
-                target="_blank"
-                className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm transition-transform active:scale-95 hover:bg-cyan-400"
-              >
-                Source Code
-                <ArrowIcon />
-              </a>
-            )}
-            {project.demo && (
-              <a
-                href={project.demo}
-                target="_blank"
-                className="group flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-800 text-white font-bold text-sm border border-white/10 transition-transform active:scale-95 hover:border-white/40"
-              >
-                Live Demo
-              </a>
-            )}
+          <div className="flex gap-6 pt-6">
+            <a
+              href={project.git}
+              target="_blank"
+              className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-white text-black font-bold text-sm transition-all hover:bg-cyan-400"
+            >
+              Source Code <ArrowIcon />
+            </a>
+            <a
+              href={project.demo}
+              target="_blank"
+              className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-zinc-900 text-white font-bold text-sm border border-white/10 transition-all hover:border-cyan-400/40"
+            >
+              Live Demo
+            </a>
           </div>
         </motion.div>
       </div>
@@ -189,8 +205,8 @@ const ProjectCard = ({ project, index }) => {
 
 const ArrowIcon = () => (
   <svg
-    width="15"
-    height="15"
+    width="18"
+    height="18"
     viewBox="0 0 15 15"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +217,7 @@ const ArrowIcon = () => (
       fill="currentColor"
       fillRule="evenodd"
       clipRule="evenodd"
-    ></path>
+    />
   </svg>
 );
 
