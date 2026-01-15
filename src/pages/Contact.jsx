@@ -1,49 +1,93 @@
-import { useRef, useMemo } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { FiGithub, FiGitlab, FiLinkedin, FiInstagram, FiSend } from 'react-icons/fi';
 
+/* ================= CONTACT MAIN ================= */
+
 const Contact = () => {
-  const ref = useRef(null);
+  const containerRef = useRef(null);
+
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: containerRef,
     offset: ['start end', 'end end'],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  const scale = useTransform(scrollYProgress, [0, 0.2], [0.95, 1]);
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 30, damping: 15 });
+
+  /* ANIMATIONS */
+  const sectionOpacity = useTransform(smoothProgress, [0, 0.2], [0, 1]);
+  const sectionScale = useTransform(smoothProgress, [0, 0.2], [0.95, 1]);
+  const bulbY = useTransform(smoothProgress, [0, 0.4], [-200, 0]);
+  const bulbGlow = useTransform(
+    smoothProgress,
+    [0.35, 0.5],
+    ['0 0 0px rgba(34,211,238,0)', '0 0 100px 10px rgba(34,211,238,0.8)']
+  );
+  const coneScale = useTransform(smoothProgress, [0.4, 0.7], [0, 1]);
+  const coneOpacity = useTransform(smoothProgress, [0.4, 0.5], [0, 1]);
+  const nameY = useTransform(smoothProgress, [0.3, 1], [50, -50]);
+  const nameOpacity = useTransform(smoothProgress, [0.2, 0.3], [0, 0.15]);
 
   return (
     <motion.section
-      ref={ref}
-      style={{ opacity, scale }}
-      className="relative min-h-screen bg-[#030303] text-white flex flex-col items-center justify-center px-6 py-20 overflow-hidden"
+      ref={containerRef}
+      style={{ opacity: sectionOpacity, scale: sectionScale }}
+      className="relative min-h-screen bg-[#020202] text-white flex flex-col items-center justify-center px-6 py-24 overflow-hidden"
     >
-      <ContactParticles scrollYProgress={scrollYProgress} />
+      <motion.div
+        style={{ opacity: nameOpacity, y: nameY }}
+        className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
+      >
+        <span className="text-[12vw] font-black text-white select-none italic uppercase tracking-tighter">
+          Muhammed Aflah
+        </span>
+      </motion.div>
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.02),transparent_70%)]" />
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyan-500/10 blur-[150px] rounded-full" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-600/10 blur-[150px] rounded-full" />
+      <div className="absolute inset-0 pointer-events-none z-10 flex justify-center">
+        <motion.div
+          style={{ scaleX: coneScale, opacity: coneOpacity, transformOrigin: 'top' }}
+          className="absolute top-[80px] w-[120vw] h-[150vh]"
+        >
+          <div
+            className="w-full h-full"
+            style={{
+              background:
+                'conic-gradient(from 165deg at 50% 0%, transparent, rgba(34,211,238,0.1) 15%, rgba(34,211,238,0.02) 50%, transparent)',
+              filter: 'blur(40px)',
+            }}
+          />
+        </motion.div>
 
-      <div className="relative z-10 w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Left Side: Text */}
+        <motion.div style={{ y: bulbY }} className="relative flex flex-col items-center">
+          <div className="w-[2px] h-32 bg-gradient-to-b from-zinc-800 to-zinc-500" />
+          <motion.div
+            style={{ boxShadow: bulbGlow }}
+            className="w-4 h-4 bg-cyan-300 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.5)]"
+          />
+        </motion.div>
+      </div>
+
+      <div className="relative z-20 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div className="space-y-8 text-center lg:text-left">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
           >
-            <h2 className="text-6xl md:text-7xl font-black tracking-tighter mb-6">
-              Let’s <br /> <span className="text-cyan-400">Connect.</span>
+            <h2 className="text-7xl md:text-8xl font-black tracking-tighter leading-none mb-4">
+              Let’s <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                Connect.
+              </span>
             </h2>
-            <p className="text-zinc-400 text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
-              Got an idea or a project in mind? I’d love to collaborate or help you bring it to
-              life. Drop a message — I usually reply within a day.
+            <p className="text-zinc-400 text-lg max-w-sm mx-auto lg:mx-0 font-medium italic">
+              "Precision is the only thing that scales."
             </p>
           </motion.div>
 
-          <div className="flex justify-center lg:justify-start gap-6">
+          <div className="flex justify-center lg:justify-start gap-4">
             {socialLinks.map((link, i) => (
-              <SocialIcon key={i} link={link} delay={i * 0.1} />
+              <SocialIcon key={i} link={link} delay={i * 0.01} />
             ))}
           </div>
         </div>
@@ -51,94 +95,58 @@ const Contact = () => {
         <motion.form
           action="https://formspree.io/f/xdkpadka"
           method="POST"
-          className="relative group bg-zinc-900/40 backdrop-blur-2xl border border-white/5 p-8 rounded-[2.5rem] shadow-2xl space-y-6"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          // bg-transparent ensures the background is clear
+          // border-cyan-500/20 adds the faint, transparent cyan edge
+          className="relative p-10 space-y-6 border border-cyan-500/20 rounded-[3rem] bg-transparent backdrop-blur-[2px]"
         >
-          <div className="space-y-4">
-            <AnimatedInput type="text" name="name" placeholder="Your Name" required />
-            <AnimatedInput type="email" name="email" placeholder="Your Email" required />
-            <AnimatedTextArea name="message" placeholder="Your Message..." required />
+          <div className="space-y-6">
+            <AnimatedInput name="name" placeholder="Name" required />
+            <AnimatedInput type="email" name="email" placeholder="Email Address" required />
+            <AnimatedTextArea name="message" placeholder="What's on your mind?" required />
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{
+              scale: 1.02,
+              backgroundColor: '#22d3ee',
+              color: '#000',
+              boxShadow: '0 0 20px rgba(34,211,238,0.4)',
+            }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="relative w-full py-4 bg-white text-black font-bold rounded-xl overflow-hidden flex items-center justify-center gap-3 group transition-colors hover:bg-cyan-400"
+            className="w-full py-5 bg-white text-black font-bold rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 shadow-xl"
           >
-            <FiSend className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            <span>Send Message</span>
+            <FiSend className="text-xl" />
+            <span className="uppercase tracking-widest text-sm">Send Message</span>
           </motion.button>
         </motion.form>
       </div>
 
-      <footer className="mt-20 text-center z-10">
-        <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mx-auto mb-6" />
-        <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
-          © {new Date().getFullYear()} Muhammed Aflah — Umm..Thank You ,I Guess
-        </p>
+      <footer className="absolute bottom-8 left-0 right-0 text-center text-[10px] text-zinc-600 font-mono tracking-[0.3em] uppercase">
+        © {new Date().getFullYear()} Muhammed Aflah
       </footer>
     </motion.section>
   );
 };
 
-const ContactParticles = ({ scrollYProgress }) => {
-  const particles = useMemo(() => Array.from({ length: 80 }), []);
-
-  return (
-    <div className="absolute inset-0 pointer-events-none">
-      {particles.map((_, i) => (
-        <SpreadParticle key={i} index={i} scrollYProgress={scrollYProgress} />
-      ))}
-    </div>
-  );
-};
-
-const SpreadParticle = ({ index, scrollYProgress }) => {
-  // Random end positions for the "spread"
-  const endX = useMemo(() => (Math.random() - 0.5) * 100 + 50, []); // 0% to 100%
-  const endY = useMemo(() => Math.random() * 100, []);
-
-  // Starts at center line (50%) and spreads out as scroll hits the bottom
-  const x = useTransform(scrollYProgress, [0, 0.5, 1], ['50%', '50%', `${endX}%`]);
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', `${endY}%`]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8], [0, 1, 0.6]);
-  const scale = useTransform(scrollYProgress, [0, 0.8, 1], [0, 1, 0.5]);
-
-  return (
-    <motion.div
-      style={{ left: x, top: y, opacity, scale }}
-      animate={{
-        opacity: [0.4, 1, 0.4],
-        boxShadow: ['0 0 5px #22d3ee', '0 0 15px #22d3ee', '0 0 5px #22d3ee'],
-      }}
-      transition={{
-        duration: 3 + Math.random() * 2,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
-      className="absolute w-1 h-1 bg-cyan-400 rounded-full"
-    />
-  );
-};
-
 const AnimatedInput = props => (
-  <div className="relative group">
+  <div className="relative group border-b border-white/10 focus-within:border-cyan-500 transition-colors duration-500">
     <input
       {...props}
-      className="w-full bg-zinc-800/30 border border-white/5 rounded-xl px-5 py-4 focus:outline-none text-white placeholder-zinc-600 transition-all focus:bg-zinc-800/60"
+      className="w-full bg-transparent px-2 py-4 text-white placeholder-zinc-700 focus:outline-none transition-all"
     />
-    <div className="absolute inset-0 border border-cyan-500/0 group-focus-within:border-cyan-500/40 rounded-xl pointer-events-none transition-all duration-500" />
   </div>
 );
 
 const AnimatedTextArea = props => (
-  <div className="relative group">
+  <div className="relative group border-b border-white/10 focus-within:border-cyan-500 transition-colors duration-500">
     <textarea
       {...props}
       rows="4"
-      className="w-full bg-zinc-800/30 border border-white/5 rounded-xl px-5 py-4 focus:outline-none text-white placeholder-zinc-600 transition-all focus:bg-zinc-800/60 resize-none"
+      className="w-full bg-transparent px-2 py-4 text-white placeholder-zinc-700 focus:outline-none transition-all resize-none"
     />
-    <div className="absolute inset-0 border border-cyan-500/0 group-focus-within:border-cyan-500/40 rounded-xl pointer-events-none transition-all duration-500" />
   </div>
 );
 
@@ -147,11 +155,11 @@ const SocialIcon = ({ link, delay }) => (
     href={link.href}
     target="_blank"
     rel="noopener noreferrer"
-    initial={{ opacity: 0, y: 10 }}
-    whileInView={{ opacity: 1, y: 0 }}
+    initial={{ opacity: 0, scale: 0.8 }}
+    whileInView={{ opacity: 1, scale: 1 }}
     transition={{ delay }}
-    whileHover={{ y: -5, color: '#22d3ee' }}
-    className="p-4 bg-zinc-900 border border-white/5 rounded-2xl text-zinc-400 transition-all shadow-xl"
+    whileHover={{ y: -8, color: '#22d3ee' }}
+    className="p-5 bg-zinc-900/30 border border-white/5 rounded-3xl text-zinc-500 transition-all backdrop-blur-sm"
   >
     <div className="text-2xl">{link.icon}</div>
   </motion.a>
